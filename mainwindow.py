@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
-
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.8.2
 #
 # WARNING! All changes made in this file will be lost!
-
 import threading
 import multiprocessing
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileSystemModel
-
 import os
 import FileFlip_Module
 working_dir = "C:\\Git"
 port = 8000
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -80,8 +76,7 @@ class Ui_MainWindow(object):
         self.tDirectory.setEnabled(False)
         self.tPort.setEnabled(False)
         self.bBrowse.setEnabled(False)
-        #FileFlip_Module.start_server(port,self.tDirectory.text())
-
+        
     def KillServer(self):
         self.e.terminate()
         self.bStart.setEnabled(True)
@@ -108,7 +103,6 @@ class Ui_MainWindow(object):
         self.tPort.setText(_translate("MainWindow", "8000"))
         self.tPort.setPlaceholderText(_translate("MainWindow", "Port"))
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -117,4 +111,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
