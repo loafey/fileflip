@@ -1,0 +1,120 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'mainwindow.ui'
+#
+# Created by: PyQt5 UI code generator 5.8.2
+#
+# WARNING! All changes made in this file will be lost!
+
+import threading
+import multiprocessing
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileSystemModel
+
+import os
+import FileFlip_Module
+working_dir = "C:\\Git"
+port = 8000
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(572, 310)
+        MainWindow.setFixedHeight(120)
+        MainWindow.setFixedWidth(264)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.tOutput.setGeometry(QtCore.QRect(0, 59, 264, 91))
+        self.tOutput.setReadOnly(True)
+        self.tOutput.setObjectName("tOutput")
+        self.bStart = QtWidgets.QPushButton(self.centralwidget)
+        self.bStart.setGeometry(QtCore.QRect(0, 29, 75, 23))
+        self.bStart.setObjectName("bStart")
+        self.bStop = QtWidgets.QPushButton(self.centralwidget)
+        self.bStop.setGeometry(QtCore.QRect(80, 29, 75, 23))
+        self.bStop.setObjectName("bStop")
+        self.tDirectory = QtWidgets.QLineEdit(self.centralwidget)
+        self.tDirectory.setGeometry(QtCore.QRect(0, 0, 191, 20))
+        self.tDirectory.setAccessibleDescription("")
+        self.tDirectory.setObjectName("tDirectory")
+        self.bBrowse = QtWidgets.QPushButton(self.centralwidget)
+        self.bBrowse.setGeometry(QtCore.QRect(190, -1, 75, 23))
+        self.bBrowse.setObjectName("bBrowse")
+        self.tPort = QtWidgets.QLineEdit(self.centralwidget)
+        self.tPort.setGeometry(QtCore.QRect(162, 30, 101, 20))
+        self.tPort.setObjectName("tPort")
+        self.treeView = QtWidgets.QTreeView(self.centralwidget)
+        self.treeView.setGeometry(QtCore.QRect(270, 0, 301, 311))
+        self.treeView.setObjectName("treeView")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.tDirectory.textChanged.connect(self.updateWorkingDir)
+        self.tPort.textChanged.connect(self.updatePort)
+        self.bStart.clicked.connect(self.StartServer)
+        self.bStop.clicked.connect(self.KillServer)
+        self.bBrowse.clicked.connect(self.FindDirectory)
+
+        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        self.bStop.setEnabled(False)
+
+        self.Output("Program made by samhamnam.")
+        self.Output("Make sure you press stop server before you quit!")
+        self.Output("Failing to do so may require killing the process in your activty manager!")
+        self.Output("")
+
+    def updateWorkingDir(self):
+        working_dir = self.tDirectory.text()
+        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+
+    def updatePort(self):
+        port = self.tPort.text()
+    
+    def StartServer(self):
+        self.e.start()
+        self.bStart.setEnabled(False)
+        self.bStop.setEnabled(True)
+        self.tDirectory.setEnabled(False)
+        self.tPort.setEnabled(False)
+        self.bBrowse.setEnabled(False)
+        #FileFlip_Module.start_server(port,self.tDirectory.text())
+
+    def KillServer(self):
+        self.e.terminate()
+        self.bStart.setEnabled(True)
+        self.bStop.setEnabled(False)
+        self.tDirectory.setEnabled(True)
+        self.tPort.setEnabled(True)
+        self.bBrowse.setEnabled(True)
+
+    def FindDirectory(self):
+        temp = QtWidgets.QFileDialog.getExistingDirectory()
+        self.tDirectory.setText(temp)
+
+    def Output(self, text):
+        self.tOutput.appendPlainText(text)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("FileFlip", "FileFlip"))
+        self.bStart.setText(_translate("MainWindow", "Start Server"))
+        self.bStop.setText(_translate("MainWindow", "Stop Server"))
+        self.tDirectory.setText(_translate("MainWindow", "C:\\"))
+        self.tDirectory.setPlaceholderText(_translate("MainWindow", "Directory"))
+        self.bBrowse.setText(_translate("MainWindow", "Browse"))
+        self.tPort.setText(_translate("MainWindow", "8000"))
+        self.tPort.setPlaceholderText(_translate("MainWindow", "Port"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+
