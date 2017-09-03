@@ -1,1 +1,4 @@
-__pycache__
+*
+!FileFlip_Module.py
+!mainwindow.py
+!README.md
