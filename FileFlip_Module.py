@@ -12,6 +12,3 @@ def start_server(port, directory):
     with socketserver.TCPServer(("",port), Handler) as httpd:
         print("serving att port", port)
         httpd.serve_forever()
-
-def stop_server():
-    httpd.stop_server()
