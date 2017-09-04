@@ -5,24 +5,32 @@
 #
 # WARNING! All changes made in this file will be lost!
 import threading
+import atexit
+import webbrowser
 import multiprocessing
+import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileSystemModel
+#from PyQt5.QtWidgets import QFileSystemModel
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import os
 import FileFlip_Module
-working_dir = "C:\\Git"
+working_dir = "C:\\"
 port = 8000
+server_on = False
 
-class Ui_MainWindow(object):
+#class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(572, 310)
-        MainWindow.setFixedHeight(120)
+        MainWindow.setFixedHeight(160)
         MainWindow.setFixedWidth(264)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.tOutput.setGeometry(QtCore.QRect(0, 59, 264, 91))
+        self.tOutput.setGeometry(QtCore.QRect(0, 59, 264, 121))
         self.tOutput.setReadOnly(True)
         self.tOutput.setObjectName("tOutput")
         self.bStart = QtWidgets.QPushButton(self.centralwidget)
@@ -60,7 +68,7 @@ class Ui_MainWindow(object):
         self.Output("Program made by samhamnam.")
         self.Output("Make sure you press stop server before you quit!")
         self.Output("Failing to do so may require killing the process in your activty manager!")
-        self.Output("")
+        self.Output("Other users can connect with your local IP address. example: 192.168.173:8000")
 
     def updateWorkingDir(self):
         working_dir = self.tDirectory.text()
@@ -70,7 +78,9 @@ class Ui_MainWindow(object):
         port = self.tPort.text()
     
     def StartServer(self):
+        webbrowser.open("http://127.0.0.1:"+str(port))
         self.e.start()
+        server_on = True
         self.bStart.setEnabled(False)
         self.bStop.setEnabled(True)
         self.tDirectory.setEnabled(False)
@@ -80,6 +90,7 @@ class Ui_MainWindow(object):
     def KillServer(self):
         self.e.terminate()
         self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        server_on = False
         self.bStart.setEnabled(True)
         self.bStop.setEnabled(False)
         self.tDirectory.setEnabled(True)
@@ -104,8 +115,8 @@ class Ui_MainWindow(object):
         self.tPort.setText(_translate("MainWindow", "8000"))
         self.tPort.setPlaceholderText(_translate("MainWindow", "Port"))
 
+
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
