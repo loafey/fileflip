@@ -79,6 +79,7 @@ class Ui_MainWindow(object):
         
     def KillServer(self):
         self.e.terminate()
+        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
         self.bStart.setEnabled(True)
         self.bStop.setEnabled(False)
         self.tDirectory.setEnabled(True)
