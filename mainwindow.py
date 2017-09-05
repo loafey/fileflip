@@ -4,6 +4,7 @@
 # Created by: PyQt5 UI code generator 5.8.2
 #
 # WARNING! All changes made in this file will be lost!
+import time
 import threading
 import atexit
 import webbrowser
@@ -20,9 +21,11 @@ working_dir = "C:\\"
 port = 8000
 server_on = False
 
+
 #class Ui_MainWindow(object):
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
+        self.using_tor = False
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(572, 310)
         MainWindow.setFixedHeight(160)
@@ -30,7 +33,7 @@ class Ui_MainWindow(QMainWindow):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.tOutput.setGeometry(QtCore.QRect(0, 59, 264, 121))
+        self.tOutput.setGeometry(QtCore.QRect(0, 69, 264, 121))
         self.tOutput.setReadOnly(True)
         self.tOutput.setObjectName("tOutput")
         self.bStart = QtWidgets.QPushButton(self.centralwidget)
@@ -62,13 +65,27 @@ class Ui_MainWindow(QMainWindow):
         self.bStop.clicked.connect(self.KillServer)
         self.bBrowse.clicked.connect(self.FindDirectory)
 
+        self.bCheckTor = QtWidgets.QCheckBox(self.centralwidget)
+        self.bCheckTor.setGeometry(2,52,100,15)
+        self.bCheckTor.setText("Use Tor?")
+        self.bCheckTor.clicked.connect(self.EnableTor)
+
         self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
         self.bStop.setEnabled(False)
 
         self.Output("Program made by samhamnam.")
         self.Output("Make sure you press stop server before you quit!")
         self.Output("Failing to do so may require killing the process in your activty manager!")
-        self.Output("Other users can connect with your local IP address. example: 192.168.173:8000")
+        self.Output("To use tor you need TOR Browser running, address will appear in hiddenservice.txt")
+
+
+    def EnableTor(self):
+        if self.bCheckTor.isChecked() == True:
+            self.using_tor = True
+            print("Using TOR? "+str(self.using_tor))
+        else:
+            self.using_tor = False
+            print("Using TOR? " +str(self.using_tor))
 
     def updateWorkingDir(self):
         working_dir = self.tDirectory.text()
@@ -79,7 +96,14 @@ class Ui_MainWindow(QMainWindow):
     
     def StartServer(self):
         webbrowser.open("http://127.0.0.1:"+str(port))
-        self.e.start()
+        if self.using_tor == False:
+            print("Started without TOR: "+str(self.using_tor))
+            self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+            self.e.start()
+        if self.using_tor == True:
+            self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(port, self.tDirectory.text()))
+            self.e.start()
+            print("Started with TOR "+str(self.using_tor))
         server_on = True
         self.bStart.setEnabled(False)
         self.bStop.setEnabled(True)
