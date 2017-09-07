@@ -26,12 +26,12 @@ normal_dir = str(os.getcwdb(),"utf-8")
 temp_del = open(output_file,"w")
 temp_del.close()
 
-#class Ui_MainWindow(object):
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
+       #Main UI 
         self.using_tor = False
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(572, 310)
+        #MainWindow.resize(572, 310)
         MainWindow.setFixedHeight(94)
         MainWindow.setFixedWidth(264)
 
@@ -58,9 +58,7 @@ class Ui_MainWindow(QMainWindow):
         self.tPort = QtWidgets.QLineEdit(self.centralwidget)
         self.tPort.setGeometry(QtCore.QRect(162, 30, 101, 20))
         self.tPort.setObjectName("tPort")
-        self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        self.treeView.setGeometry(QtCore.QRect(270, 0, 301, 311))
-        self.treeView.setObjectName("treeView")
+    
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -93,12 +91,29 @@ class Ui_MainWindow(QMainWindow):
         self.bEnableDownloads = QtWidgets.QCheckBox(self.centralwidget)
         self.bEnableDownloads.setGeometry(2,75,100,15)
         self.bEnableDownloads.setText("Download")
+        self.bEnableDownloads.clicked.connect(self.EnableDownloads)
 
         self.bCopyOnion = QtWidgets.QPushButton(self.centralwidget)
         self.bCopyOnion.setGeometry(188,72,75,23)
         self.bCopyOnion.setText("Copy Address") 
         self.bCopyOnion.setEnabled(False)   
-        self.bCopyOnion.clicked.connect(self.copyonion)  
+        self.bCopyOnion.clicked.connect(self.copyonion)
+
+       #Download ui
+        self.SiteList = QtWidgets.QTreeView(self.centralwidget)
+        self.SiteList.setGeometry(QtCore.QRect(270, 0, 301, 310))
+
+        self.bAddsite = QtWidgets.QPushButton(self.centralwidget)
+        self.bAddsite.setGeometry(QtCore.QRect(192,286,75,20))
+        self.bAddsite.setObjectName("bAddsite")
+        self.bAddsite.setText("Add site")
+
+        self.tSite = QtWidgets.QLineEdit(self.centralwidget)
+        self.tSite.setGeometry(QtCore.QRect(2,286,186,20))
+        self.tSite.setAccessibleDescription("")
+        self.tSite.setObjectName("tSite")
+        self.tSite.setPlaceholderText("Site")
+
    #Main UI
     def copyonion(self):
         clipboard.copy(open(output_file).read())
@@ -186,6 +201,16 @@ class Ui_MainWindow(QMainWindow):
     def Output(self, text):
         self.tOutput.appendPlainText(text)
    #Download
+    def EnableDownloads(self):
+        if self.bEnableDownloads.isChecked()==True:
+            #MainWindow.resize(572, 310)
+            MainWindow.setFixedHeight(310)
+            MainWindow.setFixedWidth(570)
+        else:
+            #MainWindow.resize(572, 310)
+            MainWindow.setFixedHeight(94)
+            MainWindow.setFixedWidth(264)
+
    #Misc
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -208,6 +233,6 @@ if __name__ == "__main__":
         MainWindow.show()
         sys.exit(app.exec_())
     finally:
-        temp_del = open(ui.output_file,"w")
+        temp_del = open(output_file,"w")
         temp_del.close()
         ui.e.terminate()
