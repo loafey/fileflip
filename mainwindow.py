@@ -30,15 +30,16 @@ class Ui_MainWindow(QMainWindow):
         self.using_tor = False
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(572, 310)
-        MainWindow.setFixedHeight(160)
+        MainWindow.setFixedHeight(74)
         MainWindow.setFixedWidth(264)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.tOutput.setGeometry(QtCore.QRect(0, 74, 264, 121))
-        self.tOutput.setReadOnly(True)
-        self.tOutput.setObjectName("tOutput")
+        self.tOutput.setGeometry(QtCore.QRect(0,0,0,0))
+        #self.tOutput.setGeometry(QtCore.QRect(0, 74, 264, 121))
+        #self.tOutput.setReadOnly(True)
+        #self.tOutput.setObjectName("tOutput")
         self.bStart = QtWidgets.QPushButton(self.centralwidget)
         self.bStart.setGeometry(QtCore.QRect(0, 29, 75, 23))
         self.bStart.setObjectName("bStart")
@@ -69,7 +70,7 @@ class Ui_MainWindow(QMainWindow):
         self.bBrowse.clicked.connect(self.FindDirectory)
 
         self.bCheckTor = QtWidgets.QCheckBox(self.centralwidget)
-        self.bCheckTor.setGeometry(2,57,100,15)
+        self.bCheckTor.setGeometry(2,55,100,15)
         self.bCheckTor.setText("Use Tor?")
         self.bCheckTor.clicked.connect(self.EnableTor)
 
