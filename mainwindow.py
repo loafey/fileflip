@@ -16,11 +16,13 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import os
 import FileFlip_Module
+import clipboard
 working_dir = "C:\\"
 port = 8000
 server_on = False
 
-output_file= str(os.getcwdb(),'utf-8')+"\\hiddenservice.txt"
+output_file= str(os.getcwdb(),"utf-8")+"\\hiddenservice.txt"
+normal_dir = str(os.getcwdb(),"utf-8")
 temp_del = open(output_file,"w")
 temp_del.close()
 
@@ -30,7 +32,7 @@ class Ui_MainWindow(QMainWindow):
         self.using_tor = False
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(572, 310)
-        MainWindow.setFixedHeight(74)
+        MainWindow.setFixedHeight(94)
         MainWindow.setFixedWidth(264)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -85,14 +87,21 @@ class Ui_MainWindow(QMainWindow):
         self.update_address.setInterval(500)
         self.update_address.timeout.connect(self.func_update_address)
         self.update_address.start()
-        
 
         self.bStop.setEnabled(False)
 
-        self.Output("Program made by samhamnam.")
-        self.Output("Make sure you press stop server before you quit!")
-        self.Output("Failing to do so may require killing the process in your activty manager!")
-        self.Output("To use tor you need TOR Browser running, address will appear in hiddenservice.txt")
+        self.bEnableDownloads = QtWidgets.QCheckBox(self.centralwidget)
+        self.bEnableDownloads.setGeometry(2,75,100,15)
+        self.bEnableDownloads.setText("Download")
+
+        self.bCopyOnion = QtWidgets.QPushButton(self.centralwidget)
+        self.bCopyOnion.setGeometry(188,72,75,23)
+        self.bCopyOnion.setText("Copy Address") 
+        self.bCopyOnion.setEnabled(False)   
+        self.bCopyOnion.clicked.connect(self.copyonion)  
+   #Main UI
+    def copyonion(self):
+        clipboard.copy(open(output_file).read())
 
     def closeEvent(self, event):
         print("X is clicked")
@@ -139,11 +148,13 @@ class Ui_MainWindow(QMainWindow):
         self.tDirectory.setEnabled(False)
         self.tPort.setEnabled(False)
         self.bBrowse.setEnabled(False)
+        self.bCopyOnion.setEnabled(True)
      
     def KillServer(self):
         self.e.terminate()
         self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
         server_on = False
+        self.bCopyOnion.setEnabled(False)
         self.bCheckTor.setEnabled(True)
         self.bStart.setEnabled(True)
         self.bStop.setEnabled(False)
@@ -174,7 +185,8 @@ class Ui_MainWindow(QMainWindow):
 
     def Output(self, text):
         self.tOutput.appendPlainText(text)
-
+   #Download
+   #Misc
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("FileFlip", "FileFlip"))
