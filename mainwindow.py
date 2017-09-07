@@ -11,7 +11,6 @@ import webbrowser
 import multiprocessing
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-#from PyQt5.QtWidgets import QFileSystemModel
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -21,7 +20,9 @@ working_dir = "C:\\"
 port = 8000
 server_on = False
 
-output_file=(str(os.getcwdb(),'utf-8')+"\\hiddenservice.txt","w")
+output_file= str(os.getcwdb(),'utf-8')+"\\hiddenservice.txt"
+temp_del = open(output_file,"w")
+temp_del.close()
 
 #class Ui_MainWindow(object):
 class Ui_MainWindow(QMainWindow):
@@ -31,10 +32,11 @@ class Ui_MainWindow(QMainWindow):
         MainWindow.resize(572, 310)
         MainWindow.setFixedHeight(160)
         MainWindow.setFixedWidth(264)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.tOutput.setGeometry(QtCore.QRect(0, 69, 264, 121))
+        self.tOutput.setGeometry(QtCore.QRect(0, 74, 264, 121))
         self.tOutput.setReadOnly(True)
         self.tOutput.setObjectName("tOutput")
         self.bStart = QtWidgets.QPushButton(self.centralwidget)
@@ -67,11 +69,23 @@ class Ui_MainWindow(QMainWindow):
         self.bBrowse.clicked.connect(self.FindDirectory)
 
         self.bCheckTor = QtWidgets.QCheckBox(self.centralwidget)
-        self.bCheckTor.setGeometry(2,52,100,15)
+        self.bCheckTor.setGeometry(2,57,100,15)
         self.bCheckTor.setText("Use Tor?")
         self.bCheckTor.clicked.connect(self.EnableTor)
 
-        #self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        self.tAddress = QtWidgets.QLineEdit(self.centralwidget)
+        self.tAddress.setGeometry(QtCore.QRect(102,52,160,20))
+        self.tAddress.setAccessibleDescription("")
+        self.tAddress.setObjectName("tAddress")
+        self.tAddress.setPlaceholderText("Onion address")
+        self.tAddress.setReadOnly(True)
+
+        self.update_address = QtCore.QTimer()
+        self.update_address.setInterval(500)
+        self.update_address.timeout.connect(self.func_update_address)
+        self.update_address.start()
+        
+
         self.bStop.setEnabled(False)
 
         self.Output("Program made by samhamnam.")
@@ -79,6 +93,11 @@ class Ui_MainWindow(QMainWindow):
         self.Output("Failing to do so may require killing the process in your activty manager!")
         self.Output("To use tor you need TOR Browser running, address will appear in hiddenservice.txt")
 
+    def closeEvent(self, event):
+        print("X is clicked")
+
+    def func_update_address(self):
+        self.tAddress.setText(open(output_file).read())
 
     def EnableTor(self):
         if self.bCheckTor.isChecked() == True:
@@ -101,26 +120,52 @@ class Ui_MainWindow(QMainWindow):
             print("Started without TOR: "+str(self.using_tor))
             self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
             self.e.start()
+            self.server_on_button()
         if self.using_tor == True:
-            self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(port,self.tDirectory.text(),output_file))
-            self.e.start()
-            print("Started with TOR "+str(self.using_tor))
+            if FileFlip_Module.check_tor() == True:
+                self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(port,self.tDirectory.text(),output_file))
+                self.e.start()
+                print("Started with TOR "+str(self.using_tor))
+                self.server_on_button()
+            else:
+                buttonReply = QMessageBox.question(self, 'Error', "Make sure TOR is running!", QMessageBox.Yes)
+
+    def server_on_button(self):
         server_on = True
+        self.bCheckTor.setEnabled(False)
         self.bStart.setEnabled(False)
         self.bStop.setEnabled(True)
         self.tDirectory.setEnabled(False)
         self.tPort.setEnabled(False)
         self.bBrowse.setEnabled(False)
-        
+     
     def KillServer(self):
         self.e.terminate()
         self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
         server_on = False
+        self.bCheckTor.setEnabled(True)
         self.bStart.setEnabled(True)
         self.bStop.setEnabled(False)
         self.tDirectory.setEnabled(True)
         self.tPort.setEnabled(True)
         self.bBrowse.setEnabled(True)
+        temp_del = open(output_file,"w")
+        temp_del.close()
+
+    def KillServer_AndQuit(self):
+        print("Terminating")
+        self.e.terminate()
+        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        server_on = False
+        self.bCheckTor.setEnabled(True)
+        self.bStart.setEnabled(True)
+        self.bStop.setEnabled(False)
+        self.tDirectory.setEnabled(True)
+        self.tPort.setEnabled(True)
+        self.bBrowse.setEnabled(True)
+        temp_del = open(output_file,"w")
+        temp_del.close()
+        exit()
 
     def FindDirectory(self):
         temp = QtWidgets.QFileDialog.getExistingDirectory()
@@ -142,9 +187,14 @@ class Ui_MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    try:
+        app = QtWidgets.QApplication(sys.argv)
+        MainWindow = QtWidgets.QMainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUi(MainWindow)
+        MainWindow.show()
+        sys.exit(app.exec_())
+    finally:
+        temp_del = open(ui.output_file,"w")
+        temp_del.close()
+        ui.e.terminate()

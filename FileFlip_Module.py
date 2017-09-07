@@ -33,12 +33,23 @@ def start_server_tor(port, directory, output_fileer):
         tor_running = True
         output_fileer = str(output_fileer)
         output_fileer = output_fileer.replace("\\\\", "/")
+        print(output_fileer)
         temp = open(output_fileer,"w")
-        temp.write("%s.onion")
+        temp.write("%s.onion" % response.service_id)
         temp.close()
         try:
             app.run()
         finally:
             print("Stopping server")
+
+def check_tor():
+    try:
+        with Controller.from_port() as controller:
+            controller.authenticate()
+            return True
+    except:
+        return False
+    
+print(check_tor())
 #start_server_tor(8000, "c:\\")
 #start_server(8000, "c:\\")
