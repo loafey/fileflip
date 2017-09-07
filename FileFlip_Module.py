@@ -36,5 +36,5 @@ def start_server_tor(port, directory):
             app.run()
         finally:
             print("Stopping server")
-start_server_tor(8000, "c:\\")
+#start_server_tor(8000, "c:\\")
 #start_server(8000, "c:\\")
