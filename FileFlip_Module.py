@@ -19,7 +19,7 @@ def start_server(port, directory):
     finally:
         print("Closing Server")
 
-def start_server_tor(port, directory):
+def start_server_tor(port, directory, output_fileer):
     print("Starting server TOR")
     os.chdir(directory)
     app = Flask(__name__)
@@ -31,7 +31,11 @@ def start_server_tor(port, directory):
         print("%s.onion" % response.service_id)
         tor_address = "%s.onion"
         tor_running = True
-
+        output_fileer = str(output_fileer)
+        output_fileer = output_fileer.replace("\\\\", "/")
+        temp = open(output_fileer,"w")
+        temp.write("%s.onion")
+        temp.close()
         try:
             app.run()
         finally:

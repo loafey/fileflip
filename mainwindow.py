@@ -21,6 +21,7 @@ working_dir = "C:\\"
 port = 8000
 server_on = False
 
+output_file=(str(os.getcwdb(),'utf-8')+"\\hiddenservice.txt","w")
 
 #class Ui_MainWindow(object):
 class Ui_MainWindow(QMainWindow):
@@ -70,7 +71,7 @@ class Ui_MainWindow(QMainWindow):
         self.bCheckTor.setText("Use Tor?")
         self.bCheckTor.clicked.connect(self.EnableTor)
 
-        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        #self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
         self.bStop.setEnabled(False)
 
         self.Output("Program made by samhamnam.")
@@ -89,19 +90,19 @@ class Ui_MainWindow(QMainWindow):
 
     def updateWorkingDir(self):
         working_dir = self.tDirectory.text()
-        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
+        #self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
 
     def updatePort(self):
         port = self.tPort.text()
     
     def StartServer(self):
-        webbrowser.open("http://127.0.0.1:"+str(port))
         if self.using_tor == False:
+            webbrowser.open("http://127.0.0.1:"+str(port))
             print("Started without TOR: "+str(self.using_tor))
             self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
             self.e.start()
         if self.using_tor == True:
-            self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(port, self.tDirectory.text()))
+            self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(port,self.tDirectory.text(),output_file))
             self.e.start()
             print("Started with TOR "+str(self.using_tor))
         server_on = True
