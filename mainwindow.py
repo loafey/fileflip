@@ -29,6 +29,7 @@ temp_del.close()
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
        #Main UI 
+        self.site_list = []
         self.using_tor = False
         MainWindow.setObjectName("MainWindow")
         #MainWindow.resize(572, 310)
@@ -103,16 +104,26 @@ class Ui_MainWindow(QMainWindow):
         self.SiteList = QtWidgets.QTreeView(self.centralwidget)
         self.SiteList.setGeometry(QtCore.QRect(270, 0, 301, 310))
 
+        self.siteModel = QtGui.QStandardItemModel()
+        self.SiteList.setModel(self.siteModel)
+
         self.bAddsite = QtWidgets.QPushButton(self.centralwidget)
         self.bAddsite.setGeometry(QtCore.QRect(192,286,75,20))
         self.bAddsite.setObjectName("bAddsite")
         self.bAddsite.setText("Add site")
+        self.bAddsite.clicked.connect(self.addDownload)
 
         self.tSite = QtWidgets.QLineEdit(self.centralwidget)
         self.tSite.setGeometry(QtCore.QRect(2,286,186,20))
         self.tSite.setAccessibleDescription("")
         self.tSite.setObjectName("tSite")
         self.tSite.setPlaceholderText("Site")
+        
+        self.bRemoveSite = QtWidgets.QPushButton(self.centralwidget)
+        self.bRemoveSite.setGeometry(QtCore.QRect(2,264,267,20))
+        self.bRemoveSite.setObjectName("bRemoveSite")
+        self.bRemoveSite.setText("Remove selected site(s)")
+        self.bRemoveSite.clicked.connect(self.removeSites)
 
    #Main UI
     def copyonion(self):
@@ -211,6 +222,29 @@ class Ui_MainWindow(QMainWindow):
             MainWindow.setFixedHeight(94)
             MainWindow.setFixedWidth(264)
 
+    def addDownload(self):
+        if len(self.tSite.text()) >= 1:
+            self.site_list.append(self.tSite.text())
+            self.siteModel.clear()
+            for x in range(len(self.site_list)):
+                item = QStandardItem(self.site_list[x])
+                item.setCheckable(True)
+                self.siteModel.appendRow(item)
+
+    def removeSites(self):
+        for x in range(len(self.site_list)):
+            temp2 = QModelIndex(x)
+            temp = self.siteModel.itemFromIndex(temp2)
+            if temp.isChecked == True:
+                self.site_list.remove(x)
+                
+        self.siteModel.clear()
+        
+        for x in range(len(self.site_list)):
+                item = QStandardItem(self.site_list[x])
+                item.setCheckable(True)
+                self.siteModel.appendRow(item)
+
    #Misc
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -235,4 +269,5 @@ if __name__ == "__main__":
     finally:
         temp_del = open(output_file,"w")
         temp_del.close()
-        ui.e.terminate()
+        if server_on:
+            ui.e.terminate()
