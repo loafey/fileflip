@@ -50,6 +50,5 @@ def check_tor():
     except:
         return False
     
-print(check_tor())
 #start_server_tor(8000, "c:\\")
 #start_server(8000, "c:\\")
