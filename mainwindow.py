@@ -4,19 +4,18 @@
 # Created by: PyQt5 UI code generator 5.8.2
 #
 # WARNING! All changes made in this file will be lost!
+# pylint: disable=E0602, W0612
 import webbrowser
 import multiprocessing
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *  # noqa: F403
+from PyQt5.QtGui import *  # noqa: F403
+from PyQt5.QtCore import *  # noqa: F403
 import os
 import FileFlip_Module
 import clipboard
 
-
-working_dir = "C:\\"
 port = 8000
 server_on = False
 
@@ -26,7 +25,7 @@ temp_del = open(output_file, "w")
 temp_del.close()
 
 
-class Ui_MainWindow(QMainWindow):
+class Ui_MainWindow(QMainWindow):  # noqa: F405, E0602
     def setupUi(self, MainWindow):
         # Main UI
         self.site_list = []
@@ -64,7 +63,6 @@ class Ui_MainWindow(QMainWindow):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.tDirectory.textChanged.connect(self.updateWorkingDir)
         self.tPort.textChanged.connect(self.updatePort)
         self.bStart.clicked.connect(self.StartServer)
         self.bStop.clicked.connect(self.KillServer)
@@ -118,63 +116,66 @@ class Ui_MainWindow(QMainWindow):
         self.tSite.setAccessibleDescription("")
         self.tSite.setObjectName("tSite")
         self.tSite.setPlaceholderText("Site")
-        
+
         self.bRemoveSite = QtWidgets.QPushButton(self.centralwidget)
         self.bRemoveSite.setGeometry(QtCore.QRect(2, 264, 267, 20))
         self.bRemoveSite.setObjectName("bRemoveSite")
         self.bRemoveSite.setText("Remove selected site(s)")
         self.bRemoveSite.clicked.connect(self.removeSites)
 
-   #Main UI
+    # Main UI
     def copyonion(self):
         clipboard.copy(open(output_file).read())
-
 
     def closeEvent(self, event):
         print("X is clicked")
 
-
     def func_update_address(self):
         self.tAddress.setText(open(output_file).read())
 
-
     def EnableTor(self):
-        if self.bCheckTor.isChecked() == True:
+        if self.bCheckTor.isChecked() is True:
             self.using_tor = True
-            print("Using TOR? "+str(self.using_tor))
+            print("Using TOR? " + str(self.using_tor))
         else:
             self.using_tor = False
-            print("Using TOR? " +str(self.using_tor))
-
-
-    def updateWorkingDir(self):
-        working_dir = self.tDirectory.text()
-        #self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
-
+            print("Using TOR? " + str(self.using_tor))
 
     def updatePort(self):
-        port = self.tPort.text()
-    
+        port = self.tPort.text()  # noqa: F841
 
     def StartServer(self):
-        if self.using_tor == False:
+        if self.using_tor is False:
             webbrowser.open("http://127.0.0.1:"+self.tPort.text())
             print("Started without TOR: "+str(self.using_tor))
-            self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(self.tPort.text(), self.tDirectory.text()))
+            self.e = multiprocessing.Process(
+                target=FileFlip_Module.start_server,
+                args=(self.tPort.text(), self.tDirectory.text())
+            )
             self.e.start()
             self.server_on_button()
-        if self.using_tor == True:
-            if FileFlip_Module.check_tor() == True:
-                self.e = multiprocessing.Process(target=FileFlip_Module.start_server_tor, args=(self.tPort.text(), self.tDirectory.text(),output_file))
+        if self.using_tor is True:
+            if FileFlip_Module.check_tor() is True:
+                self.e = multiprocessing.Process(
+                    target=FileFlip_Module.start_server_tor,
+                    args=(
+                        self.tPort.text(),
+                        self.tDirectory.text(),
+                        output_file)
+                )
                 self.e.start()
                 print("Started with TOR "+str(self.using_tor))
                 self.server_on_button()
             else:
-                buttonReply = QMessageBox.question(self, 'Error', "Make sure TOR is running!", QMessageBox.Yes)
-
+                buttonReply = QMessageBox.question(  # noqa: F841, F405
+                    self,
+                    'Error',
+                    "Make sure TOR is running!",
+                    QMessageBox.Yes  # noqa: F841, F405
+                )
 
     def server_on_button(self):
-        server_on = True
+        server_on = True  # noqa: F841
         self.bCheckTor.setEnabled(False)
         self.bStart.setEnabled(False)
         self.bStop.setEnabled(True)
@@ -182,12 +183,17 @@ class Ui_MainWindow(QMainWindow):
         self.tPort.setEnabled(False)
         self.bBrowse.setEnabled(False)
         self.bCopyOnion.setEnabled(True)
-     
 
     def KillServer(self):
         self.e.terminate()
-        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
-        server_on = False
+        self.e = multiprocessing.Process(
+            target=FileFlip_Module.start_server,
+            args=(
+                port,
+                self.tDirectory.text()
+                )
+            )
+        server_on = False  # noqa: F841
         self.bCopyOnion.setEnabled(False)
         self.bCheckTor.setEnabled(True)
         self.bStart.setEnabled(True)
@@ -195,78 +201,83 @@ class Ui_MainWindow(QMainWindow):
         self.tDirectory.setEnabled(True)
         self.tPort.setEnabled(True)
         self.bBrowse.setEnabled(True)
-        temp_del = open(output_file,"w")
+        temp_del = open(output_file, "w")
         temp_del.close()
-
 
     def KillServer_AndQuit(self):
         print("Terminating")
         self.e.terminate()
-        self.e = multiprocessing.Process(target=FileFlip_Module.start_server, args=(port, self.tDirectory.text()))
-        server_on = False
+        self.e = multiprocessing.Process(
+            target=FileFlip_Module.start_server,
+            args=(
+                port, self.tDirectory.text()
+            )
+        )
+        server_on = False  # noqa: F841
         self.bCheckTor.setEnabled(True)
         self.bStart.setEnabled(True)
         self.bStop.setEnabled(False)
         self.tDirectory.setEnabled(True)
         self.tPort.setEnabled(True)
         self.bBrowse.setEnabled(True)
-        temp_del = open(output_file,"w")
+        temp_del = open(output_file, "w")
         temp_del.close()
         exit()
-
 
     def FindDirectory(self):
         temp = QtWidgets.QFileDialog.getExistingDirectory()
         self.tDirectory.setText(temp)
 
-
     def Output(self, text):
         self.tOutput.appendPlainText(text)
-  
-   #Download
+
+    # Download
     def EnableDownloads(self):
-        if self.bEnableDownloads.isChecked()==True:
-            #MainWindow.resize(572, 310)
+        if self.bEnableDownloads.isChecked() is True:
+            # MainWindow.resize(572, 310)
             MainWindow.setFixedHeight(310)
             MainWindow.setFixedWidth(570)
         else:
-            #MainWindow.resize(572, 310)
+            # MainWindow.resize(572, 310)
             MainWindow.setFixedHeight(94)
             MainWindow.setFixedWidth(264)
-
 
     def addDownload(self):
         if len(self.tSite.text()) >= 1:
             self.site_list.append(self.tSite.text())
             self.siteModel.clear()
             for x in range(len(self.site_list)):
-                item = QStandardItem(self.site_list[x])
+                item = QStandardItem(self.site_list[x])  # noqa: F405
                 item.setCheckable(True)
                 self.siteModel.appendRow(item)
-
 
     def removeSites(self):
         for x in range(len(self.site_list)):
-            temp2 = QModelIndex(x)
+            temp2 = QModelIndex(x)  # noqa: F405
             temp = self.siteModel.itemFromIndex(temp2)
-            if temp.isChecked == True:
+            if temp.isChecked is True:
                 self.site_list.remove(x)
-                
+
         self.siteModel.clear()
-        
+
         for x in range(len(self.site_list)):
-                item = QStandardItem(self.site_list[x])
+                item = QStandardItem(self.site_list[x])  # noqa: F405
                 item.setCheckable(True)
                 self.siteModel.appendRow(item)
 
-   #Misc
+    # Misc
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("FileFlip", "FileFlip"))
         self.bStart.setText(_translate("MainWindow", "Start Server"))
         self.bStop.setText(_translate("MainWindow", "Stop Server"))
         self.tDirectory.setText(_translate("MainWindow", "C:\\"))
-        self.tDirectory.setPlaceholderText(_translate("MainWindow", "Directory"))
+        self.tDirectory.setPlaceholderText(
+            _translate(
+                "MainWindow",
+                "Directory"
+            )
+        )
         self.bBrowse.setText(_translate("MainWindow", "Browse"))
         self.tPort.setText(_translate("MainWindow", "8000"))
         self.tPort.setPlaceholderText(_translate("MainWindow", "Port"))
@@ -281,7 +292,7 @@ if __name__ == "__main__":
         MainWindow.show()
         sys.exit(app.exec_())
     finally:
-        temp_del = open(output_file,"w")
+        temp_del = open(output_file, "w")
         temp_del.close()
         if server_on:
             ui.e.terminate()
